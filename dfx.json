@@ -1,0 +1,26 @@
+{
+  "canisters": {
+    "traly_backend": {
+      "main": "src/traly_backend/main.mo",
+      "type": "motoko"
+    },
+    "traly_frontend": {
+      "dependencies": [
+        "traly_backend"
+      ],
+      "source": [
+        "src/traly_frontend/dist"
+      ],
+      "type": "assets",
+      "workspace": "traly_frontend"
+    }
+  },
+  "defaults": {
+    "build": {
+      "args": "",
+      "packtool": ""
+    }
+  },
+  "output_env_file": ".env",
+  "version": 1
+}
