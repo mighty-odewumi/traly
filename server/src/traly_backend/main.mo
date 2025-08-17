@@ -14,18 +14,16 @@ actor {
     isSpam: Bool;
   };
   
-  public query func greet(name : Text) : async Text {
-    return "Hello, " # name # "!";
-  };
-
   transient var inbox : Buffer.Buffer<Email> = Buffer.Buffer<Email>(10);
   transient var archive : Buffer.Buffer<Email> = Buffer.Buffer<Email>(10);
 
   // Initialize sample inbox
   private func initInbox() {
-    inbox.add({ id = 1; subject = "Important Update"; from = "team@example.com"; isRead = false; isSpam = false });
-    inbox.add({ id = 2; subject = "Win a Free Prize!"; from = "spam@example.com"; isRead = false; isSpam = true });
-    inbox.add({ id = 3; subject = "Meeting Reminder"; from = "boss@example.com"; isRead = false; isSpam = false });
+    inbox.add({ id = 1; subject = "Important Update"; from = "team@dodo.com"; isRead = false; isSpam = false });
+    inbox.add({ id = 2; subject = "Win a Free Prize!"; from = "asus@promo.com"; isRead = false; isSpam = true });
+    inbox.add({ id = 3; subject = "Meeting Reminder"; from = "erica@gooogle.com"; isRead = false; isSpam = false });
+    inbox.add({ id = 4; subject = "New on ICP"; from = "sales@icpio.com"; isRead = false; isSpam = false });
+    inbox.add({ id = 5; subject = "Buy an iPhone for $5"; from = "iphone@iphone.com"; isRead = false; isSpam = true });
   };
 
   // Function to fetch all emails from inbox
