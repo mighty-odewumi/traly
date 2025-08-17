@@ -2,14 +2,16 @@ import { useState } from 'react';
 import { traly_backend } from 'declarations/traly_backend';
 
 function App() {
-  const [greeting, setGreeting] = useState('');
+  const [mails, setMails] = useState(null);
 
   function handleSubmit(event) {
     event.preventDefault();
     const name = event.target.elements.name.value;
-    traly_backend.greet(name).then((greeting) => {
-      setGreeting(greeting);
+    traly_backend.fetchAllEmails().then((mail) => {
+      console.log("mail", mail);
+      setMails(mail);
     });
+    console.log("Clicked", mails);
     return false;
   }
 
@@ -23,7 +25,13 @@ function App() {
         <input id="name" alt="Name" type="text" />
         <button type="submit">Click Me!</button>
       </form>
-      <section id="greeting">{greeting}</section>
+      <section id="mails">
+        {mails && mails.map(mail => {
+          return (
+            <div key={mail.id}>{mail.subject}</div>
+          )
+        })}
+      </section>
     </main>
   );
 }
