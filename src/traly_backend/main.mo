@@ -13,6 +13,10 @@ actor {
     isRead: Bool;
     isSpam: Bool;
   };
+  
+  public query func greet(name : Text) : async Text {
+    return "Hello, " # name # "!";
+  };
 
   transient var inbox : Buffer.Buffer<Email> = Buffer.Buffer<Email>(10);
   transient var archive : Buffer.Buffer<Email> = Buffer.Buffer<Email>(10);
@@ -26,7 +30,7 @@ actor {
 
   // Function to fetch all emails from inbox
   public query func fetchAllEmails() : async [Email] {
-    Buffer.toArray(inbox);
+    return Buffer.toArray(inbox);
   };
 
   // Helper to find email index by ID
@@ -82,9 +86,10 @@ actor {
     };
   };
 
-// Test section: Run actions and log results incrementally
+  initInbox();
+
+  // Test section: Run actions and log results incrementally
   public func runTests() : async () {
-    initInbox();
 
     Debug.print("Initial inbox:");
     let initialEmails = await fetchAllEmails();
