@@ -118,6 +118,8 @@ For manual testing:
 - **Single-User**: Assumes one user; extend with Principal-based maps for multi-user.
 - **No Leaderboard/Rewards Yet**: Points are not tracked and ranked/converted (to be added in v2).
 
+## Contributing
+Fork, PR, or open issues. Follow Motoko best practices
 
 ## Acknowledgments
 
