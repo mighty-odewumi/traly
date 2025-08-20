@@ -1,10 +1,8 @@
 import Buffer "mo:base/Buffer";
-import Debug "mo:base/Debug";
 import Nat "mo:base/Nat";
 import Text "mo:base/Text";
-import Iter "mo:base/Iter";
 
-actor {
+persistent actor {
 
   type Email = {
     id: Nat;
@@ -16,22 +14,29 @@ actor {
   
   transient var inbox : Buffer.Buffer<Email> = Buffer.Buffer<Email>(10);
   transient var archive : Buffer.Buffer<Email> = Buffer.Buffer<Email>(10);
+  transient var initialized : Bool = false;
 
   // Initialize sample inbox
   private func initInbox() {
-    inbox.add({ id = 1; subject = "Important Update"; from = "team@dodo.com"; isRead = false; isSpam = false });
-    inbox.add({ id = 2; subject = "Win a Free Prize!"; from = "asus@promo.com"; isRead = false; isSpam = true });
-    inbox.add({ id = 3; subject = "Meeting Reminder"; from = "erica@gooogle.com"; isRead = false; isSpam = false });
-    inbox.add({ id = 4; subject = "New on ICP"; from = "sales@icpio.com"; isRead = false; isSpam = false });
-    inbox.add({ id = 5; subject = "Buy an iPhone for $5"; from = "iphone@iphone.com"; isRead = false; isSpam = true });
+    if (not initialized) {
+      inbox.add({ id = 1; subject = "Important Update"; from = "team@dodo.com"; isRead = false; isSpam = false });
+      inbox.add({ id = 2; subject = "Win a Free Prize!"; from = "asus@promo.com"; isRead = false; isSpam = true });
+      inbox.add({ id = 3; subject = "Meeting Reminder"; from = "erica@gooogle.com"; isRead = false; isSpam = false });
+      inbox.add({ id = 4; subject = "New on ICP"; from = "sales@icpio.com"; isRead = false; isSpam = false });
+      inbox.add({ id = 5; subject = "Buy an iPhone for $5"; from = "iphone@iphone.com"; isRead = false; isSpam = true });
+      initialized := true;
+    };
   };
 
-  // Function to fetch all emails from inbox
   public query func fetchAllEmails() : async [Email] {
+    initInbox();
     return Buffer.toArray(inbox);
   };
 
-  // Helper to find email index by ID
+  public query func getArchivedEmails() : async [Email] {
+    return Buffer.toArray(archive);
+  };
+
   private func findEmailIndex(id: Nat) : ?Nat {
     var index : Nat = 0;
     for (email in inbox.vals()) {
@@ -43,8 +48,8 @@ actor {
     null;
   };
 
-  // Mark an email as read
   public func markAsRead(id: Nat) : async Bool {
+    initInbox();
     switch (findEmailIndex(id)) {
       case (?index) {
         let email = inbox.get(index);
@@ -57,8 +62,8 @@ actor {
     };
   };
 
-  // Delete an email
   public func deleteEmail(id: Nat) : async Bool {
+    initInbox();
     switch (findEmailIndex(id)) {
       case (?index) {
         ignore inbox.remove(index);
@@ -70,8 +75,8 @@ actor {
     };
   };
 
-  // Archive an email (remove from inbox, add to archive)
   public func archiveEmail(id: Nat) : async Bool {
+    initInbox();
     switch (findEmailIndex(id)) {
       case (?index) {
         let email = inbox.remove(index);
@@ -81,43 +86,6 @@ actor {
       case null {
         false;
       };
-    };
-  };
-
-  initInbox();
-
-  // Test section: Run actions and log results incrementally
-  public func runTests() : async () {
-
-    Debug.print("Initial inbox:");
-    let initialEmails = await fetchAllEmails();
-    for (email in Iter.fromArray(initialEmails)) {
-      Debug.print("ID: " # Nat.toText(email.id) # ", Subject: " # email.subject # ", From: " # email.from # ", isRead: " # debug_show(email.isRead) # ", isSpam: " # debug_show(email.isSpam));
-    };
-
-    ignore await markAsRead(1);
-    Debug.print("After marking email 1 as read:");
-    let afterReadEmails = await fetchAllEmails();
-    for (email in Iter.fromArray(afterReadEmails)) {
-      Debug.print("ID: " # Nat.toText(email.id) # ", Subject: " # email.subject # ", From: " # email.from # ", isRead: " # debug_show(email.isRead) # ", isSpam: " # debug_show(email.isSpam));
-    };
-
-    ignore await deleteEmail(2);
-    Debug.print("After deleting email 2:");
-    let afterDeleteEmails = await fetchAllEmails();
-    for (email in Iter.fromArray(afterDeleteEmails)) {
-      Debug.print("ID: " # Nat.toText(email.id) # ", Subject: " # email.subject # ", From: " # email.from # ", isRead: " # debug_show(email.isRead) # ", isSpam: " # debug_show(email.isSpam));
-    };
-
-    ignore await archiveEmail(3);
-    Debug.print("After archiving email 3:");
-    let afterArchiveEmails = await fetchAllEmails();
-    for (email in Iter.fromArray(afterArchiveEmails)) {
-      Debug.print("ID: " # Nat.toText(email.id) # ", Subject: " # email.subject # ", From: " # email.from # ", isRead: " # debug_show(email.isRead) # ", isSpam: " # debug_show(email.isSpam));
-    };
-    Debug.print("Archived emails:");
-    for (email in archive.vals()) {
-      Debug.print("ID: " # Nat.toText(email.id) # ", Subject: " # email.subject # ", From: " # email.from # ", isRead: " # debug_show(email.isRead) # ", isSpam: " # debug_show(email.isSpam));
     };
   };
 };
